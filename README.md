@@ -1,5 +1,20 @@
 # ijkplayer
 
+## Linux / NDK r29：编译 16 KB 对齐 so
+
+本机 Linux x86_64 编译入口（需先初始化本仓库的 FFmpeg、OpenSSL、libyuv、SoundTouch 源码，以及安装 `make`、Perl、Python 3、NASM）：
+
+```bash
+export ANDROID_NDK="$HOME/Android/Sdk/ndk/29.0.14206865"
+bash android/build-16k.sh             # arm64-v8a + x86_64
+# bash android/build-16k.sh arm64     # 仅 ARM64
+python3 android/check-16k.py android/build-16k/jniLibs
+```
+
+产物位于 `android/build-16k/jniLibs/<ABI>/`，每套包含 `libijkffmpeg.so`、`libijksdl.so`、`libijkplayer.so`，可复制到应用的 `src/main/jniLibs/`。默认最低 API 21、并行数 8，可通过 `API`、`JOBS` 设置。OpenSSL 静态链接，保留 HTTPS；C++ 运行库使用 `c++_static`。
+
+脚本使用独立构建目录和 LLVM 工具链，三个 so 均使用 `max-page-size=16384` / `common-page-size=16384`，结束时检查所有 ELF `PT_LOAD` 段的对齐值及文件偏移/虚拟地址关系。APK 的 ZIP 对齐需在应用打包阶段另行检查，例如 `zipalign -c -P 16 -v 4 app.apk`；ELF 校验不代替 16 KB 设备上的播放测试。
+
 ## 【修改说明（64位16K + 32位可构建）】
 
 > 当前链路以 **arm64-v8a 生产** 为主，保持 **arm64-v8a/x86_64 为 16K page size**；同时补齐 **armeabi-v7a（FFmpeg 4.3，4K page size）** 构建用于 32 位设备兼容。

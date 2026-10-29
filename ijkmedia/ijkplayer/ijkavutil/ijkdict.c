@@ -176,7 +176,7 @@ uintptr_t ijk_av_dict_strtoptr(char * value) {
 uintptr_t ijk_av_dict_get_intptr(const IjkAVDictionary *m, const char* key) {
     uintptr_t ptr = NULL;
     IjkAVDictionaryEntry *t = NULL;
-    if ((t = av_dict_get(m, key, NULL, 0))) {
+    if ((t = ijk_av_dict_get(m, key, NULL, 0))) {
         return ijk_av_dict_strtoptr(t->value);
     }
     return NULL;

@@ -23,6 +23,7 @@
 
 #include "ijksdl_egl.h"
 
+#include <android/native_window.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "ijksdl/ijksdl_gles2.h"
